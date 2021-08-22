@@ -1,0 +1,289 @@
+% Gemini theme
+% See: https://rev.cs.uchicago.edu/k4rtik/gemini-uccs
+% A fork of https://github.com/anishathalye/gemini
+
+\documentclass[final]{beamer}
+
+% ====================
+% Packages
+% ====================
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[size=custom,width=120,height=72,scale=1.1]{beamerposter}
+\usetheme{gemini}
+\usecolortheme{uchicago}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+\usepackage{proof}
+
+% ====================
+% Lengths
+% ====================
+
+% If you have N columns, choose \sepwidth and \colwidth such that
+% (N+1)*\sepwidth + N*\colwidth = \paperwidth
+\newlength{\sepwidth}
+\newlength{\colwidth}
+\setlength{\sepwidth}{0.025\paperwidth}
+\setlength{\colwidth}{0.3\paperwidth}
+
+\newcommand{\separatorcolumn}{\begin{column}{\sepwidth}\end{column}}
+
+% ====================
+% Title
+% ====================
+
+\title{A Linear Temporal Logic with Heartbeat}
+
+\author{Mohammad-Ali A'R\^ABI \inst{1}}
+
+\institute[shortinst]{\inst{1} University of Freiburg}
+
+% ====================
+% Footer (optional)
+% ====================
+
+\footercontent{
+  \href{https://aerabi.com}{https://aerabi.com} \hfill
+  Schildackerweg 8, 79115 Freiburg, Germany \hfill
+  \href{mailto:aerabi@gmx.de}{aerabi@gmx.de}}
+% (can be left out to remove footer)
+
+% ====================
+% Logo (optional)
+% ====================
+
+% use this to include logos on the left and/or right side of the header:
+% \logoright{\includegraphics[height=7cm]{logo1.pdf}}
+% \logoleft{\includegraphics[height=7cm]{logo2.pdf}}
+
+% ====================
+% Body
+% ====================
+
+\begin{document}
+\addtobeamertemplate{headline}{}
+{
+    \begin{tikzpicture}[remember picture,overlay]
+      \node [anchor=north west, inner sep=3cm] at ([xshift=0.0cm,yshift=1.0cm]current page.north west)
+      {%\includegraphics[height=5.0cm]{logos/uc-logo-white.eps}
+      }; % also try shield-white.eps
+      \node [anchor=north east, inner sep=3cm] at ([xshift=0.0cm,yshift=2.5cm]current page.north east)
+      {%\includegraphics[height=8.0cm]{logos/cs-logo-white.png}
+      };
+    \end{tikzpicture}
+}
+
+\begin{frame}[t]
+\begin{columns}[t]
+\separatorcolumn
+
+\begin{column}{\colwidth}
+
+  \begin{block}{Linear Linear Temporal Logic}
+
+    \heading{Language}
+    \[
+    \alpha, \beta ::= 0 \mid a \mid \alpha \multimap \beta \mid \alpha \oplus \beta \mid \alpha \otimes \beta \mid~!\alpha \mid \lozenge\alpha.
+    \]
+    
+    \heading{Sequent Calculus}
+    \begin{gather*}
+    \infer[\mbox{Ax}]{\Gamma, \alpha \vdash \alpha}{}
+    ~~~~ ~~~~
+    \infer[\mbox{EFQ}]{\Gamma \vdash \beta}{\Gamma \vdash 0}
+    \\ \\ 
+    \infer[\otimes\mbox{-I}]{\Gamma_1, \Gamma_2 \vdash \alpha_1 \otimes \alpha_2}{
+        \Gamma_1 \vdash \alpha_1
+        &
+        \Gamma_2 \vdash \alpha_2
+    }
+    ~~~~ ~~~~
+    \infer[\otimes\mbox{-E}]{\Gamma \vdash \alpha_i}{
+        \Gamma \vdash \alpha_1 \otimes \alpha_2
+    }
+    \\ \\ 
+    \infer[\oplus\mbox{-I}]{\Gamma\vdash \alpha_1 \oplus \alpha_2}{\Gamma \vdash \alpha_i}
+    ~~~~ ~~~~
+    \infer[\oplus\mbox{-E}]{\Gamma_1, \Gamma_2 \vdash \beta}{
+        \Gamma_1 \vdash \alpha_1 \oplus \alpha_2
+        &
+        \Gamma_2, \alpha_1 \vdash \beta
+        &
+        \Gamma_2, \alpha_2 \vdash \beta
+    }
+    \\ \\ 
+    \infer[\multimap\mbox{-I}]{\Gamma \vdash \alpha \multimap \beta}{\Gamma, \alpha \vdash \beta}
+    ~~~~ ~~~~
+    \infer[\multimap\mbox{-E}]{\Gamma_1, \Gamma_2 \vdash \beta}{\Gamma_1 \vdash \alpha & \Gamma_2 \vdash \alpha \multimap \beta}
+    \\ \\
+    \infer[\lozenge\mbox{-I}]{\Gamma \vdash \lozenge\alpha}{\Gamma \vdash \alpha}
+    ~~~~ ~~~~
+    \infer[\lozenge\mbox{-E}]{\Gamma_1, \Gamma_2 \vdash \lozenge\beta}{
+        \Gamma_1 \vdash \lozenge\alpha
+        &
+        \Gamma_2, \alpha \vdash \lozenge\beta
+    }
+    \\ \\
+    \infer[\mbox{Derel}]{\Gamma, !\alpha \vdash \beta}{\Gamma, \alpha \vdash \beta}
+    ~~~~ ~~~~
+    \infer[\mbox{Prom}]{!\Gamma \vdash !\alpha}{!\Gamma \vdash \alpha}
+    \end{gather*}
+    
+    \heading{Structural Rules}
+    \begin{gather*}
+    \infer=[\mbox{Exch}]{\Gamma_1, \alpha_2, \alpha_1, \Gamma_2 \vdash \beta}{\Gamma_1, \alpha_1, \alpha_2, \Gamma_2 \vdash \beta}
+    \\ \\
+    \infer=[\mbox{Weak}]{\Gamma, !\alpha \vdash \beta}{\Gamma \vdash \beta}
+    ~~~~ ~~~~
+    \infer=[\mbox{Contr}]{\Gamma, !\alpha \vdash \beta}{\Gamma, !\alpha, !\alpha \vdash \beta}
+    \end{gather*}
+
+  \end{block}
+
+  \begin{alertblock}{ReactiveX and Observables}
+
+    ReactiveX has become a standard model for event-driven programming and is used widely in the industry. Still, its abstractions have not been studied adequately. 
+    Describing events with the future/eventually modality of linear temporal logic was already done by Paykin et al. \cite{Paykin2016TheEO}. But a theoretical study on streams of events (i.e. observables in ReactiveX) has not yet been carried out, although most event-driven production codes are wrapped into streams of events rather than single events. Different ports of ReactiveX such as RxJava and RxJS are good evidents. We will first introduce a new modality called \textit{heartbeat} in a linear version \cite{DBLP:journals/tcs/Girard87} of the linear temporal logic \cite{DBLP:conf/focs/Pnueli77}, and then try to complete the Curry--Howard correspondent \cite{Howard1969TheFN} with an extension of linear/non-linear logic \cite{DBLP:conf/csl/Benton94}.
+
+  \end{alertblock}
+
+\end{column}
+
+\separatorcolumn
+
+\begin{column}{\colwidth}
+
+  \begin{block}{Linear Linear Temporal Logic with Heartbeat}
+
+    \heading{Language}
+    
+    \[
+    \alpha, \beta ::= 0 \mid a \mid \alpha \multimap \beta \mid \alpha \oplus \beta \mid \alpha \otimes \beta \mid~!\alpha \mid \lozenge\alpha \mid \heartsuit\alpha.
+    \]
+    
+    \heading{Sequent Calculus}
+    
+    \begin{gather*}
+    \infer[\heartsuit\mbox{-I}]{\Gamma \vdash \heartsuit\alpha}{\Gamma \vdash \lozenge\alpha}
+    ~~~~ ~~~~
+    \infer[\mbox{FJ}]{\Gamma \vdash \lozenge!\alpha}{\Gamma \vdash \heartsuit\alpha}
+    ~~~~ ~~~~
+    \infer[\mbox{FM}]{\Gamma_1, \Gamma_2 \vdash \heartsuit\beta}{
+        \Gamma_1 \vdash \heartsuit\alpha
+        &
+        \Gamma_2, \alpha \vdash \heartsuit\beta
+    }
+    \end{gather*}
+    
+  \end{block}
+  
+  \begin{block}{Curry--Howard Correspondence}
+    \heading{Types}
+    \begin{itemize}
+        \item $\lozenge\alpha$ is the type of an event of type $\alpha$. E.g. \texttt{Promise<}$\alpha$\texttt{>} or \texttt{Single<}$\alpha$\texttt{>} in the sense of RxJava.
+        
+        \item $\heartsuit\alpha$ is the type of a stream of events of type $\alpha$. E.g. \texttt{Observable<}$\alpha$\texttt{>}.
+        
+        \item $!\alpha$ is the type of an array of items with type $\alpha$.
+    \end{itemize}
+  
+    \heading{Sequent Calculus}
+    \begin{gather*}
+    \infer[\lozenge\mbox{-I}]{\Gamma \vdash \mathtt{newSingle}~t : \lozenge\alpha}{\Gamma \vdash t : \alpha}
+    \\ \\
+    \infer[\lozenge\mbox{-E}]{\Gamma_1, \Gamma_2 \vdash t_1~\mathtt{flatMap}~(\lambda x. t_2) : \lozenge\beta}{
+        \Gamma_1 \vdash t_1 : \lozenge\alpha
+        &
+        \Gamma_2, x : \alpha \vdash t_2 : \lozenge\beta
+    }
+    \\ \\
+    \infer[\heartsuit\mbox{-I}]{\Gamma \vdash \mathtt{fromSingle}~t : \heartsuit\alpha}{\Gamma \vdash t : \lozenge\alpha}
+    \\ \\
+    \infer[\mbox{FJ}]{\Gamma \vdash \mathtt{forkJoin}~t : \lozenge!\alpha}{\Gamma \vdash t : \heartsuit\alpha}
+    \\ \\
+    \infer[\mbox{FM}]{\Gamma_1, \Gamma_2 \vdash t_1~\mathtt{flatMap}~(\lambda x. t_2) : \heartsuit\beta}{
+        \Gamma_1 \vdash t_1 : \heartsuit\alpha
+        &
+        \Gamma_2, x : \alpha \vdash t_2 : \heartsuit\beta
+    }
+    \end{gather*}
+    
+    \begin{itemize}
+        \item $\lozenge$-I. Having an already available value of type $\alpha$, one can consider it a single event that immediately resolves.
+    
+        \item $\heartsuit$-I. Having a single event or a promise, one can always cast them into an observable and consider them a stream of one event.
+        
+        \item FJ. Force-join is the act of waiting for all of the events in the stream to resolve and then return their values in an array.
+        
+        \item FM. Flat-map is transforming every event into another stream of events, and then flatten the result into a stream of events (rather than a stream of streams).
+    \end{itemize}
+  \end{block}
+
+\end{column}
+
+\separatorcolumn
+
+\begin{column}{\colwidth}
+
+  \begin{block}{Motivation in Terms of RxJava}
+
+    Previous work by \cite{Paykin2016TheEO} describes events by future modality in linear linear temporal logic. Still, this model is not expressive enough to describe streams of events, such as observables in ReactiveX. Considering RxJava, the future types are singles, where $\heartsuit$ is observable/flowable.
+
+    \begin{table}
+      \centering
+      \begin{tabular}{l l l}
+        \toprule
+        \textbf{Java Term} & \textbf{Java Type} & \textbf{LLTL+} \\
+        \midrule
+        \texttt{Single.just("Hello World")} & \texttt{Single<String>} & $\lozenge$\texttt{String} \\
+        \texttt{employeeId\$.flatMap(retrieveFromDB)} & \texttt{Observable<Employee>} & $\heartsuit$\texttt{Employee} \\
+        \bottomrule
+      \end{tabular}
+      \caption{RxJava vs Linear Linear Temporal Logic with Heartbeat}
+    \end{table}
+
+  \end{block}
+  
+  \begin{alertblock}{Notes}
+  \begin{itemize}
+      \item The modality $\heartsuit$ is called \textbf{heartbeat}, as it can show arbitrary occurrence of events in future, possibly unlimited (take heart of Zeus).
+      
+      \item If the linear temporal logic in use is not linear in the sense of Girard \cite{DBLP:journals/tcs/Girard87}, $\heartsuit$ equals $\lozenge$.
+  \end{itemize}
+  \end{alertblock}
+  
+  \begin{block}{Operational Semantics}
+  The semantics presented here is an extension of the one presented in \cite{aerabi-MSc}. Only the new rules are presented.
+  
+  \heading{Step Relation Extension}
+  
+  \begin{eqnarray*}
+  (\mathtt{newSingle}~t_1)~\mathtt{flatMap}~(\lambda x. t_2) &\leadsto& t_2[x \mapsto t_1] \\
+  (\mathtt{fromSingle}~t_1)~\mathtt{flatMap}~(\lambda x. t_2) &\leadsto& t_1~\mathtt{flatMap}~t_2 \\
+  \mathtt{forkJoin~fromSingle~newSingle}~t &\leadsto& t
+  \end{eqnarray*}
+  \end{block}
+  
+  \heading{Lemmata}
+  \textbf{Lemma (Preservation)} If $\vdash t : \alpha$ and $t \leadsto t'$ then $\vdash t' : \alpha$.
+
+  \begin{block}{References}
+
+    \nocite{*}
+    \footnotesize{\bibliographystyle{plain}\bibliography{poster}}
+
+  \end{block}
+
+\end{column}
+
+\separatorcolumn
+\end{columns}
+\end{frame}
+
+\end{document}
